@@ -63,6 +63,28 @@ module Blob =
             BlobName = Some blobName
         }
 
+    let delete blobName options =
+        Delete {
+            Connection = options
+            BlobName = Some blobName
+            InludeSnapshots = InludeSnapshots false
+        }
+
+    let deleteSnapshots blobName options =
+        DeleteSnapshots {
+            Connection = options
+            BlobName = Some blobName
+        }
+
+    let includeSnapshots includeSnapshots (blobOperation: BlobOperation) =
+        match blobOperation with
+        | Delete op ->
+            Delete {
+                op with
+                    InludeSnapshots =  InludeSnapshots includeSnapshots
+            }
+        | _ -> failwith "This operation is valid only for Upload" 
+
     let overwriteBlob overwriteBlob (blobOperation: BlobOperation) = 
         match blobOperation with
         | Upload op ->
@@ -71,8 +93,6 @@ module Blob =
                     OverwriteBlob =  OverwriteBlob overwriteBlob
             }
         | _ -> failwith "This operation is valid only for Upload"
-
-
 
     let createContainer createContainer blobOperation = 
         match blobOperation with
@@ -114,4 +134,8 @@ module Blob =
             unbox BlobOperations.execUpload getClient op
         | Download op-> 
             unbox BlobOperations.execDownload getClient op
+        | Delete op ->
+            unbox BlobOperations.execDelete getClient op
+        | DeleteSnapshots op -> 
+            unbox BlobOperations.execDeleteSnapshots getClient op
 

@@ -13,8 +13,6 @@ let readFile containerName blob =
                     |> Blob.download blob
                     |> Blob.execAsync<BlobDownloadInfo>
     result
-    
-
 
 let uploadFile containerName file =
     let connString = "UseDevelopmentStorage=true"
@@ -26,6 +24,26 @@ let uploadFile containerName file =
                     |> Blob.createContainer true
                     |> Blob.execAsync<BlobContentInfo>
 
+    result
+
+let deleteFile containerName blob  =
+    let connString = "UseDevelopmentStorage=true"
+    let result = connString
+                    |> Blob.fromConnectionString 
+                    |> Blob.container containerName
+                    |> Blob.delete blob
+                    |> Blob.includeSnapshots true
+                    |> Blob.execAsync<bool>
+
+    result
+
+let deleteSnapshots containerName blob  =
+    let connString = "UseDevelopmentStorage=true"
+    let result = connString
+                    |> Blob.fromConnectionString 
+                    |> Blob.container containerName
+                    |> Blob.deleteSnapshots blob
+                    |> Blob.execAsync<bool>
     result
 
 
@@ -45,6 +63,14 @@ let main _ =
         let! blobInfo = readFile "container" "test.json"
         use sw = new StreamReader(blobInfo.Value.Content)
         sw.ReadToEnd() |> Console.WriteLine
+        
+    } |> Async.RunSynchronously
+
+    async {
+        let! result = deleteFile "container" "test.json"
+        match result.Value with
+        | true ->  Console.WriteLine "Success"
+        | false ->  failwith "File should be deleted"
         
     } |> Async.RunSynchronously
 

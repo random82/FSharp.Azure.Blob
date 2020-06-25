@@ -42,7 +42,49 @@ module internal BlobOperations =
                                     let blobClient = client.GetBlobClient blobName
                                     return blobClient.DownloadAsync() |> Async.AwaitTask
                                 }
-                        | None -> failwith "No blobName provided"
+                        | None -> failwith "No blob name provided"
+
+        match result with
+        | Some result ->
+            result
+        | None -> failwith "Unable to download the blob"
+
+    let createDeleteSnapshotOptions op =
+        let (InludeSnapshots includeSnapshots) = op.InludeSnapshots 
+        match includeSnapshots with
+        | true -> DeleteSnapshotsOption.IncludeSnapshots
+        | _ -> DeleteSnapshotsOption.None
+
+    let execDelete (getClient: ConnectionOperation -> BlobContainerClient) (op: DeleteOp) = 
+        let connInfo = op.Connection
+        let client = getClient connInfo
+
+        let result = match op.BlobName with
+                        | Some blobName ->
+                                maybe {
+                                    let blobClient = client.GetBlobClient blobName
+                                    let options = createDeleteSnapshotOptions op
+                                    return blobClient.DeleteIfExistsAsync(options) |> Async.AwaitTask
+                                }
+                        | None -> failwith "No blob name provided"
+
+        match result with
+        | Some result ->
+            result
+        | None -> failwith "Unable to download the blob"
+
+
+    let execDeleteSnapshots (getClient: ConnectionOperation -> BlobContainerClient) (op: DeleteOp) = 
+        let connInfo = op.Connection
+        let client = getClient connInfo
+
+        let result = match op.BlobName with
+                        | Some blobName ->
+                                maybe {
+                                    let blobClient = client.GetBlobClient blobName
+                                    return blobClient.DeleteIfExistsAsync(DeleteSnapshotsOption.OnlySnapshots) |> Async.AwaitTask
+                                }
+                        | None -> failwith "No blob name provided"
 
         match result with
         | Some result ->

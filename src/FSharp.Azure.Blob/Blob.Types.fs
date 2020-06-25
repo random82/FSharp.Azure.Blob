@@ -7,6 +7,7 @@ open Azure.Storage.Blobs.Models
 
 type CreateContainer = CreateContainer of bool
 type OverwriteBlob = OverwriteBlob of bool
+type InludeSnapshots = InludeSnapshots of bool
 
 type ConnectionType = 
     | FromConnectionString
@@ -30,6 +31,19 @@ type DownloadOp =
         BlobName: string option
     }
 
+type DeleteOp =
+    {
+        Connection: ConnectionOperation
+        BlobName: string option
+        InludeSnapshots: InludeSnapshots
+    }
+
+type DeleteSnapshotsOp =
+    {
+        Connection: ConnectionOperation
+        BlobName: string option
+    }
+
 type UploadOp =
     {
         Connection: ConnectionOperation
@@ -39,17 +53,8 @@ type UploadOp =
         OverwriteBlob: OverwriteBlob
     }
 
-type UpdateOp =
-    { 
-        Connection: ConnectionOperation
-        Id: string 
-    }
-
-type DeleteOp =
-    { 
-        Connection: ConnectionOperation
-        Id: string
-    }
 type BlobOperation =
     | Upload of UploadOp
     | Download of DownloadOp
+    | Delete of DeleteOp
+    | DeleteSnapshots of DeleteSnapshotsOp
