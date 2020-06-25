@@ -8,11 +8,18 @@
 let readFile containerName blob =
     let connString = "UseDevelopmentStorage=true"
     let result = connString
-                    |> Blob.fromConnectionString 
+                    |> Blob.fromConnectionString
                     |> Blob.container containerName
                     |> Blob.download blob
                     |> Blob.execAsync<BlobDownloadInfo>
     result
+
+let downloadTestJson =
+    async {
+        let! blobInfo = readFile "container" "test.json"
+        use sw = new StreamReader(blobInfo.Value.Content)
+        sw.ReadToEnd() |> Console.WriteLine
+    } |> Async.RunSynchronously
 ```
 
 ### Upload blob
@@ -21,13 +28,23 @@ let readFile containerName blob =
 let uploadFile containerName file =
     let connString = "UseDevelopmentStorage=true"
     let result = connString
-                    |> Blob.fromConnectionString 
+                    |> Blob.fromConnectionString
                     |> Blob.container containerName
                     |> Blob.upload "test.json" file
                     |> Blob.overwriteBlob true
                     |> Blob.createContainer true
                     |> Blob.execAsync<BlobContentInfo>
     result
+
+let uploadTestJson =
+    use file = File.OpenRead "test.json"
+
+    async {
+        let! blobInfo = uploadFile "container" file
+        blobInfo.Value.ContentHash
+        |> BitConverter.ToString
+        |> Console.WriteLine
+    } |> Async.RunSynchronously
 ```
 
 ### Delete blob
