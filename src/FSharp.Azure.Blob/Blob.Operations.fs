@@ -29,7 +29,7 @@ module internal BlobOperations =
 
         match result with
         | Some result -> 
-            BlobContentInfoAsync result
+            result
         | None -> failwith "Unable to upload the file to blob"
 
     let execRead (getClient: ConnectionOperation -> BlobContainerClient) (op: ReadOp) = 
@@ -46,6 +46,6 @@ module internal BlobOperations =
 
         match result with
         | Some result ->
-            BlobDownloadInfoAsync result
+            result
         | None -> failwith "Unable to upload the file to blob"
 

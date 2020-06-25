@@ -50,11 +50,6 @@ type DeleteOp =
         Connection: ConnectionOperation
         Id: string
     }
-
-type BlobOperationResponse = 
-    | BlobDownloadInfoAsync of Async<Azure.Response<BlobDownloadInfo>>
-    | BlobContentInfoAsync of Async<Azure.Response<BlobContentInfo>>
-
 type BlobOperation =
     | CreateOrUpdate of CreateOrUpdateOp
     | Read of ReadOp

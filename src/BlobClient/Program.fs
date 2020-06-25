@@ -3,6 +3,7 @@ module BlobClient
 open FSharp.Azure.Blob
 open System.IO
 open System
+open Azure.Storage.Blobs.Models
 
 let readFile containerName blob =
     let connString = "UseDevelopmentStorage=true"
@@ -10,10 +11,9 @@ let readFile containerName blob =
                     |> Blob.fromConnectionString 
                     |> Blob.container containerName
                     |> Blob.readBlob blob
-                    |> Blob.execAsync
-
-    match result with
-    | BlobDownloadInfoAsync info -> info
+                    |> Blob.execAsync<BlobDownloadInfo>
+    result
+    
 
 
 let uploadFile containerName file =
@@ -24,11 +24,10 @@ let uploadFile containerName file =
                     |> Blob.createOrUpdate "test.json" file
                     |> Blob.overwriteBlob true
                     |> Blob.createContainer true
-                    |> Blob.execAsync
+                    |> Blob.execAsync<BlobContentInfo>
 
+    result
 
-    match result with
-    | BlobContentInfoAsync info -> info
 
 [<EntryPoint>]
 let main _ =

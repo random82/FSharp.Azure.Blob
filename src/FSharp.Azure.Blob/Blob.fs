@@ -1,6 +1,8 @@
 namespace FSharp.Azure.Blob
 open Azure.Storage.Blobs
 open System.IO
+open Azure.Storage.Blobs.Models
+open Azure
 
 [<RequireQualifiedAccess>]
 module Blob =
@@ -105,7 +107,11 @@ module Blob =
         | Some client -> client
         | None -> failwith "No connection information provided"
 
-    let execAsync (op: BlobOperation) =
+
+    let execAsync<'T> (op: BlobOperation): Async<Response<'T>> =
         match op with
-        | CreateOrUpdate op -> BlobOperations.execCreateOrUpdate getClient op
-        | Read op-> BlobOperations.execRead getClient op
+        | CreateOrUpdate op -> 
+            unbox BlobOperations.execCreateOrUpdate getClient op
+        | Read op-> 
+            unbox BlobOperations.execRead getClient op
+
