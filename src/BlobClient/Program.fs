@@ -35,14 +35,14 @@ let main _ =
     use file = File.OpenRead "test.json"
 
     async {
-        let! blobInfo = uploadFile "invoice" file
+        let! blobInfo = uploadFile "container" file
         blobInfo.Value.ContentHash
         |> BitConverter.ToString
         |> Console.WriteLine
     } |> Async.RunSynchronously
 
     async {
-        let! blobInfo = readFile "invoice" "test.json"
+        let! blobInfo = readFile "container" "test.json"
         use sw = new StreamReader(blobInfo.Value.Content)
         sw.ReadToEnd() |> Console.WriteLine
         
