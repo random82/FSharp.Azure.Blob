@@ -6,7 +6,7 @@ open FSharp.Control
 
 [<RequireQualifiedAccess>]
 module internal BlobOperations =
-    let execCreateOrUpdate (getClient: ConnectionOperation -> BlobContainerClient) (op: CreateOrUpdateOp) = 
+    let execUpload (getClient: ConnectionOperation -> BlobContainerClient) (op: UploadOp) = 
         let connInfo = op.Connection
         let client = getClient connInfo
 
@@ -32,7 +32,7 @@ module internal BlobOperations =
             result
         | None -> failwith "Unable to upload the file to blob"
 
-    let execRead (getClient: ConnectionOperation -> BlobContainerClient) (op: ReadOp) = 
+    let execDownload (getClient: ConnectionOperation -> BlobContainerClient) (op: DownloadOp) = 
         let connInfo = op.Connection
         let client = getClient connInfo
 
@@ -47,5 +47,5 @@ module internal BlobOperations =
         match result with
         | Some result ->
             result
-        | None -> failwith "Unable to upload the file to blob"
+        | None -> failwith "Unable to download the blob"
 

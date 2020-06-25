@@ -24,13 +24,13 @@ type ConnectionOperation =
         ContainerName: string option
     }
 
-type ReadOp =
+type DownloadOp =
     {
         Connection: ConnectionOperation
         BlobName: string option
     }
 
-type CreateOrUpdateOp =
+type UploadOp =
     {
         Connection: ConnectionOperation
         BlobName: string
@@ -51,5 +51,5 @@ type DeleteOp =
         Id: string
     }
 type BlobOperation =
-    | CreateOrUpdate of CreateOrUpdateOp
-    | Read of ReadOp
+    | Upload of UploadOp
+    | Download of DownloadOp

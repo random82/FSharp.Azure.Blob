@@ -10,7 +10,7 @@ let readFile containerName blob =
     let result = connString
                     |> Blob.fromConnectionString 
                     |> Blob.container containerName
-                    |> Blob.readBlob blob
+                    |> Blob.download blob
                     |> Blob.execAsync<BlobDownloadInfo>
     result
     
@@ -21,7 +21,7 @@ let uploadFile containerName file =
     let result = connString
                     |> Blob.fromConnectionString 
                     |> Blob.container containerName
-                    |> Blob.createOrUpdate "test.json" file
+                    |> Blob.upload "test.json" file
                     |> Blob.overwriteBlob true
                     |> Blob.createContainer true
                     |> Blob.execAsync<BlobContentInfo>
