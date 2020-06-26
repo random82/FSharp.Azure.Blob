@@ -48,8 +48,8 @@ module Blob =
             ContainerName = Some containerName
     }
 
-    let createOrUpdate blobName item options = 
-        CreateOrUpdate {
+    let upload blobName item options = 
+        Upload {
             Connection = options
             BlobName = blobName
             Item = item
@@ -57,31 +57,51 @@ module Blob =
             OverwriteBlob =  OverwriteBlob false
     }
 
-    let readBlob blobName options =
-        Read {
+    let download blobName options =
+        Download {
             Connection = options
             BlobName = Some blobName
         }
 
+    let delete blobName options =
+        Delete {
+            Connection = options
+            BlobName = Some blobName
+            InludeSnapshots = InludeSnapshots false
+        }
+
+    let deleteSnapshots blobName options =
+        DeleteSnapshots {
+            Connection = options
+            BlobName = Some blobName
+        }
+
+    let includeSnapshots includeSnapshots (blobOperation: BlobOperation) =
+        match blobOperation with
+        | Delete op ->
+            Delete {
+                op with
+                    InludeSnapshots =  InludeSnapshots includeSnapshots
+            }
+        | _ -> failwith "This operation is valid only for Upload" 
+
     let overwriteBlob overwriteBlob (blobOperation: BlobOperation) = 
         match blobOperation with
-        | CreateOrUpdate op ->
-            CreateOrUpdate {
+        | Upload op ->
+            Upload {
                 op with
                     OverwriteBlob =  OverwriteBlob overwriteBlob
             }
-        | _ -> failwith "This operation is valid only for CreateOrUpdate"
-
-
+        | _ -> failwith "This operation is valid only for Upload"
 
     let createContainer createContainer blobOperation = 
         match blobOperation with
-        | CreateOrUpdate op ->
-            CreateOrUpdate {
+        | Upload op ->
+            Upload {
                 op with
                     CreateContainer =  CreateContainer createContainer
             }
-        | _ -> failwith "This operation is valid only for CreateOrUpdate"
+        | _ -> failwith "This operation is valid only for upload"
 
 
     let private getClient connInfo =
@@ -110,8 +130,12 @@ module Blob =
 
     let execAsync<'T> (op: BlobOperation): Async<Response<'T>> =
         match op with
-        | CreateOrUpdate op -> 
-            unbox BlobOperations.execCreateOrUpdate getClient op
-        | Read op-> 
-            unbox BlobOperations.execRead getClient op
+        | Upload op -> 
+            unbox BlobOperations.execUpload getClient op
+        | Download op-> 
+            unbox BlobOperations.execDownload getClient op
+        | Delete op ->
+            unbox BlobOperations.execDelete getClient op
+        | DeleteSnapshots op -> 
+            unbox BlobOperations.execDeleteSnapshots getClient op
 
