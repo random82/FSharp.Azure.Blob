@@ -1,0 +1,28 @@
+name: Publish Nuget Package
+defaults:
+  run:
+    working-directory: src/FSharp.Azure.Blob
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.101
+      - name: Install dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+      - name: Test
+        run: dotnet test --no-restore --verbosity normal
+      - name: Package
+        run: dotnet pack --configuration Release
+      - name: Publish to nuget
+        run: dotnet nuget push ./bin/Release/FSharp.Azure.Blob.*.nupkg -k ${{ secrets.NUGET_TOKEN }} -s https://api.nuget.org/v3/index.json
