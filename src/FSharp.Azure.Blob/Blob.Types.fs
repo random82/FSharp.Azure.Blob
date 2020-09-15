@@ -53,8 +53,15 @@ type UploadOp =
         OverwriteBlob: OverwriteBlob
     }
 
+type ExistsOp =
+    {
+        Connection: ConnectionOperation
+        BlobName: string option
+    }
+
 type BlobOperation =
     | Upload of UploadOp
     | Download of DownloadOp
     | Delete of DeleteOp
     | DeleteSnapshots of DeleteSnapshotsOp
+    | Exists of ExistsOp

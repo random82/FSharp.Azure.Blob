@@ -46,6 +46,15 @@ let deleteSnapshots containerName blob  =
                     |> Blob.execAsync<bool>
     result
 
+let existsFile containerName blob =
+    let connString = "UseDevelopmentStorage=true"
+    let result = connString
+                    |> Blob.fromConnectionString
+                    |> Blob.container containerName
+                    |> Blob.exists blob
+                    |> Blob.execAsync<bool>
+    result
+
 
 [<EntryPoint>]
 let main _ =
@@ -58,6 +67,14 @@ let main _ =
         |> BitConverter.ToString
         |> Console.WriteLine
     } |> Async.RunSynchronously
+
+    async {
+        let! result = existsFile "container" "test.json"
+        match result.Value with
+        | true ->  Console.WriteLine "File exists"
+        | false ->  failwith "File not found"
+        
+    } |> Async.RunSynchronously    
 
     async {
         let! blobInfo = readFile "container" "test.json"

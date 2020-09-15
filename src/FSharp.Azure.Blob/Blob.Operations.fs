@@ -91,3 +91,20 @@ module internal BlobOperations =
             result
         | None -> failwith "Unable to download the blob"
 
+    let execExists (getClient: ConnectionOperation -> BlobContainerClient) (op: ExistsOp) =
+        let connInfo = op.Connection
+        let client = getClient connInfo
+
+        let result = match op.BlobName with
+                        | Some blobName ->
+                                maybe {
+                                    let blobClient = client.GetBlobClient blobName
+                                    return blobClient.ExistsAsync() |> Async.AwaitTask
+                                }
+                        | None -> failwith "No blob name provided"
+
+        match result with
+        | Some result ->
+            result
+        | None -> failwith "Unable to download the blob"
+
