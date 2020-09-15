@@ -71,8 +71,8 @@ let main _ =
     async {
         let! result = existsFile "container" "test.json"
         match result.Value with
-        | true ->  Console.WriteLine "File exists"
-        | false ->  failwith "File not found"
+        | true ->  Console.WriteLine "Blob exists"
+        | false ->  failwith "Blob not found"
         
     } |> Async.RunSynchronously    
 

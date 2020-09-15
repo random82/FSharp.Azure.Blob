@@ -3,7 +3,6 @@ namespace FSharp.Azure.Blob
 open Azure.Storage.Blobs
 open System
 open System.IO
-open Azure.Storage.Blobs.Models
 
 type CreateContainer = CreateContainer of bool
 type OverwriteBlob = OverwriteBlob of bool

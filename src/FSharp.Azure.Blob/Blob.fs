@@ -83,7 +83,7 @@ module Blob =
                 op with
                     InludeSnapshots =  InludeSnapshots includeSnapshots
             }
-        | _ -> failwith "This operation is valid only for Upload" 
+        | _ -> failwith "This operation is valid only for Delete" 
 
     let exists blobName options =
         Exists {
