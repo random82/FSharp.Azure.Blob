@@ -3,7 +3,6 @@ namespace FSharp.Azure.Blob
 open Azure.Storage.Blobs
 open System
 open System.IO
-open Azure.Storage.Blobs.Models
 
 type CreateContainer = CreateContainer of bool
 type OverwriteBlob = OverwriteBlob of bool
@@ -53,8 +52,15 @@ type UploadOp =
         OverwriteBlob: OverwriteBlob
     }
 
+type ExistsOp =
+    {
+        Connection: ConnectionOperation
+        BlobName: string option
+    }
+
 type BlobOperation =
     | Upload of UploadOp
     | Download of DownloadOp
     | Delete of DeleteOp
     | DeleteSnapshots of DeleteSnapshotsOp
+    | Exists of ExistsOp

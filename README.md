@@ -74,6 +74,19 @@ let deleteSnapshots containerName blob  =
     result
 ```
 
+### Check if blob exists
+
+```fsharp
+let existsFile containerName blob  =
+    let connString = "UseDevelopmentStorage=true"
+    let result = connString
+                    |> Blob.fromConnectionString
+                    |> Blob.container containerName
+                    |> Blob.exists blob
+                    |> Blob.execAsync<bool>
+    result
+```
+
 ## Development
 
 ## Sample run in VS Code

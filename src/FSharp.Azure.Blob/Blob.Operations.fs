@@ -71,7 +71,7 @@ module internal BlobOperations =
         match result with
         | Some result ->
             result
-        | None -> failwith "Unable to download the blob"
+        | None -> failwith "Unable to delete the blob"
 
 
     let execDeleteSnapshots (getClient: ConnectionOperation -> BlobContainerClient) (op: DeleteOp) = 
@@ -89,5 +89,22 @@ module internal BlobOperations =
         match result with
         | Some result ->
             result
-        | None -> failwith "Unable to download the blob"
+        | None -> failwith "Unable to delete the blob snapshots"
+
+    let execExists (getClient: ConnectionOperation -> BlobContainerClient) (op: ExistsOp) =
+        let connInfo = op.Connection
+        let client = getClient connInfo
+
+        let result = match op.BlobName with
+                        | Some blobName ->
+                                maybe {
+                                    let blobClient = client.GetBlobClient blobName
+                                    return blobClient.ExistsAsync() |> Async.AwaitTask
+                                }
+                        | None -> failwith "No blob name provided"
+
+        match result with
+        | Some result ->
+            result
+        | None -> failwith "Unable to verify if the blob exists"
 

@@ -83,7 +83,13 @@ module Blob =
                 op with
                     InludeSnapshots =  InludeSnapshots includeSnapshots
             }
-        | _ -> failwith "This operation is valid only for Upload" 
+        | _ -> failwith "This operation is valid only for Delete" 
+
+    let exists blobName options =
+        Exists {
+            Connection = options
+            BlobName = Some blobName
+        }
 
     let overwriteBlob overwriteBlob (blobOperation: BlobOperation) = 
         match blobOperation with
@@ -138,4 +144,6 @@ module Blob =
             unbox BlobOperations.execDelete getClient op
         | DeleteSnapshots op -> 
             unbox BlobOperations.execDeleteSnapshots getClient op
+        | Exists op ->
+            unbox BlobOperations.execExists getClient op
 
