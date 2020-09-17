@@ -6,7 +6,7 @@
     <RepositoryUrl>https://github.com/random82/FSharp.Azure.Blob</RepositoryUrl>
     <PackageTags>fsharp, azure blob</PackageTags>
     <Authors>Dominik Raniszewski</Authors>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
