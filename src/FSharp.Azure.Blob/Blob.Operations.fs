@@ -6,6 +6,7 @@ open FSharp.Control
 
 [<RequireQualifiedAccess>]
 module internal BlobOperations =
+
     let execUpload (getClient: ConnectionOperation -> BlobContainerClient) (op: UploadOp) = 
         let connInfo = op.Connection
         let client = getClient connInfo
@@ -49,7 +50,7 @@ module internal BlobOperations =
             result
         | None -> failwith "Unable to download the blob"
 
-    let createDeleteSnapshotOptions op =
+    let createDeleteSnapshotOptions (op: DeleteOp) =
         let (InludeSnapshots includeSnapshots) = op.InludeSnapshots 
         match includeSnapshots with
         | true -> DeleteSnapshotsOption.IncludeSnapshots
@@ -72,7 +73,6 @@ module internal BlobOperations =
         | Some result ->
             result
         | None -> failwith "Unable to delete the blob"
-
 
     let execDeleteSnapshots (getClient: ConnectionOperation -> BlobContainerClient) (op: DeleteOp) = 
         let connInfo = op.Connection
@@ -108,3 +108,54 @@ module internal BlobOperations =
             result
         | None -> failwith "Unable to verify if the blob exists"
 
+    let getProperties (getClient: ConnectionOperation -> BlobContainerClient) (op : GetPropertiesOp) =
+        let connInfo = op.Connection
+        let client = getClient connInfo
+
+        let result = match op.BlobName with
+                        | Some blobName ->
+                                maybe {
+                                    let blobClient = client.GetBlobClient blobName
+                                    return blobClient.GetPropertiesAsync() |> Async.AwaitTask
+                                }
+                        | None -> failwith "No blob name provided"
+
+        match result with
+        | Some result ->
+            result
+        | None -> failwith "Unable to retrive blob properties"
+
+    let setProperties (getClient: ConnectionOperation -> BlobContainerClient) (op: SetPropertiesOp) =
+        let connInfo = op.Connection
+        let client = getClient connInfo
+
+        let result = match op.BlobName with
+                        | Some blobName ->
+                                maybe {
+                                    let blobClient = client.GetBlobClient blobName
+                                    return blobClient.SetHttpHeadersAsync(op.Properties.Value) |> Async.AwaitTask
+                                }
+                        | None -> failwith "No blob name provided"
+
+        match result with
+        | Some result ->
+            result
+        | None -> failwith "Unable to update blob properties"
+
+
+    let setMetadata (getClient: ConnectionOperation -> BlobContainerClient) (op : SetMetadataOp) =
+        let connInfo = op.Connection
+        let client = getClient connInfo
+
+        let result = match op.BlobName with
+                        | Some blobName ->
+                                maybe {
+                                    let blobClient = client.GetBlobClient blobName
+                                    return blobClient.SetMetadataAsync(op.Metadata.Value) |> Async.AwaitTask
+                                }
+                        | None -> failwith "No blob name provided"
+
+        match result with
+        | Some result ->
+            result
+        | None -> failwith "Unable to set blob metadata"
