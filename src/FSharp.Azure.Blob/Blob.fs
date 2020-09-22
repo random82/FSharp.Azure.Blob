@@ -168,6 +168,8 @@ module Blob =
             unbox BlobOperations.execExists getClient op
         | GetProperties op ->
             unbox BlobOperations.getProperties getClient op
+        | SetProperties op ->
+            unbox BlobOperations.setProperties getClient op
         | SetMetadata op ->
             unbox BlobOperations.setMetadata getClient op
 

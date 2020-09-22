@@ -131,10 +131,13 @@ module internal BlobOperations =
 
         let result = match op.BlobName with
                         | Some blobName ->
-                                maybe {
-                                    let blobClient = client.GetBlobClient blobName
-                                    return blobClient.SetHttpHeadersAsync(op.Properties.Value) |> Async.AwaitTask
-                                }
+                            match op.Properties with
+                                | Some properties ->
+                                    maybe {
+                                        let blobClient = client.GetBlobClient blobName
+                                        return blobClient.SetHttpHeadersAsync(op.Properties.Value) |> Async.AwaitTask
+                                    }
+                                | None -> failwith "No properties provided"
                         | None -> failwith "No blob name provided"
 
         match result with
@@ -149,10 +152,13 @@ module internal BlobOperations =
 
         let result = match op.BlobName with
                         | Some blobName ->
-                                maybe {
-                                    let blobClient = client.GetBlobClient blobName
-                                    return blobClient.SetMetadataAsync(op.Metadata.Value) |> Async.AwaitTask
-                                }
+                            match op.Metadata with
+                                | Some metadata ->
+                                    maybe {
+                                        let blobClient = client.GetBlobClient blobName
+                                        return blobClient.SetMetadataAsync(metadata) |> Async.AwaitTask
+                                    }
+                                | None -> failwith "No metadata provided"
                         | None -> failwith "No blob name provided"
 
         match result with
