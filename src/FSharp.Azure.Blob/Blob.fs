@@ -1,8 +1,9 @@
 namespace FSharp.Azure.Blob
-open Azure.Storage.Blobs
-open System.IO
-open Azure.Storage.Blobs.Models
+
 open Azure
+open Azure.Storage.Blobs
+open System
+open System.IO
 
 [<RequireQualifiedAccess>]
 module Blob =
@@ -17,38 +18,38 @@ module Blob =
             ContainerName = None
         }
 
-    let fromConnectionString connectionString = 
+    let fromConnectionString (connectionString: string) = 
         { defaultConnectionOp() with
             Type = FromConnectionString
             ConnectionString = Some connectionString
         }
 
-    let fromConnectionStringWithOptions connectionString options = {
+    let fromConnectionStringWithOptions (connectionString: string) (options: BlobClientOptions) = {
         defaultConnectionOp() with
             Options = Some options
             Type = FromConnectionString
             ConnectionString = Some connectionString 
     }
 
-    let fromConnectionUri uri = { 
+    let fromConnectionUri (uri: System.Uri) = { 
         defaultConnectionOp() with
             Type = FromUri
             Uri = Some uri
     }
 
-    let fromConnectionUriWithOptions uri options = { 
+    let fromConnectionUriWithOptions (uri: string) (options: BlobClientOptions) = { 
         defaultConnectionOp() with
             Options = Some options
             Type = FromUri
             ConnectionString = Some uri 
     }
 
-    let container containerName options = {
+    let container (containerName: string) (options: ConnectionOperation) = {
         options with 
             ContainerName = Some containerName
     }
 
-    let upload blobName item options = 
+    let upload (blobName: string) (item: Stream) (options: ConnectionOperation) = 
         Upload {
             Connection = options
             BlobName = blobName
@@ -57,26 +58,26 @@ module Blob =
             OverwriteBlob =  OverwriteBlob false
     }
 
-    let download blobName options =
+    let download (blobName: string) (options: ConnectionOperation) =
         Download {
             Connection = options
             BlobName = Some blobName
         }
 
-    let delete blobName options =
+    let delete (blobName: string) (options: ConnectionOperation) =
         Delete {
             Connection = options
             BlobName = Some blobName
             InludeSnapshots = InludeSnapshots false
         }
 
-    let deleteSnapshots blobName options =
+    let deleteSnapshots (blobName: string) (options: ConnectionOperation) =
         DeleteSnapshots {
             Connection = options
             BlobName = Some blobName
         }
 
-    let includeSnapshots includeSnapshots (blobOperation: BlobOperation) =
+    let includeSnapshots (includeSnapshots: bool) (blobOperation: BlobOperation) =
         match blobOperation with
         | Delete op ->
             Delete {
@@ -85,13 +86,33 @@ module Blob =
             }
         | _ -> failwith "This operation is valid only for Delete" 
 
-    let exists blobName options =
+    let exists (blobName: string) (options: ConnectionOperation) =
         Exists {
             Connection = options
             BlobName = Some blobName
         }
 
-    let overwriteBlob overwriteBlob (blobOperation: BlobOperation) = 
+    let getProperties (blobName: string) (options: ConnectionOperation) =
+        GetProperties {
+            Connection = options
+            BlobName = Some blobName
+        }
+
+    let setProperties (blobName: string) (properties: Azure.Storage.Blobs.Models.BlobHttpHeaders) (options: ConnectionOperation) =
+        SetProperties {
+            Connection = options
+            BlobName = Some blobName
+            Properties = Some properties
+        }
+
+    let setMetadata (blobName: string) (metadata: Collections.Generic.IDictionary<string,string>) (options: ConnectionOperation) =
+        SetMetadata {
+            Connection = options
+            BlobName = Some blobName
+            Metadata = Some metadata
+        }
+
+    let overwriteBlob (overwriteBlob: bool) (blobOperation: BlobOperation) = 
         match blobOperation with
         | Upload op ->
             Upload {
@@ -100,7 +121,7 @@ module Blob =
             }
         | _ -> failwith "This operation is valid only for Upload"
 
-    let createContainer createContainer blobOperation = 
+    let createContainer (createContainer: bool) (blobOperation: BlobOperation) = 
         match blobOperation with
         | Upload op ->
             Upload {
@@ -109,8 +130,7 @@ module Blob =
             }
         | _ -> failwith "This operation is valid only for upload"
 
-
-    let private getClient connInfo =
+    let private getClient (connInfo: ConnectionOperation) =
         let clientOps =
             match connInfo.Options with
             | Some options -> options
@@ -146,4 +166,10 @@ module Blob =
             unbox BlobOperations.execDeleteSnapshots getClient op
         | Exists op ->
             unbox BlobOperations.execExists getClient op
+        | GetProperties op ->
+            unbox BlobOperations.getProperties getClient op
+        | SetProperties op ->
+            unbox BlobOperations.setProperties getClient op
+        | SetMetadata op ->
+            unbox BlobOperations.setMetadata getClient op
 

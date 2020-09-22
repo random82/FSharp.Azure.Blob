@@ -58,9 +58,32 @@ type ExistsOp =
         BlobName: string option
     }
 
+type GetPropertiesOp =
+    {
+        Connection: ConnectionOperation
+        BlobName: string option
+    }
+
+type SetPropertiesOp =
+    {
+        Connection: ConnectionOperation
+        BlobName: string option
+        Properties: Azure.Storage.Blobs.Models.BlobHttpHeaders option
+    }
+
+type SetMetadataOp =
+    {
+        Connection: ConnectionOperation
+        BlobName: string option
+        Metadata: Collections.Generic.IDictionary<string,string> option
+    }
+
 type BlobOperation =
     | Upload of UploadOp
     | Download of DownloadOp
     | Delete of DeleteOp
     | DeleteSnapshots of DeleteSnapshotsOp
     | Exists of ExistsOp
+    | GetProperties of GetPropertiesOp
+    | SetProperties of SetPropertiesOp
+    | SetMetadata of SetMetadataOp
