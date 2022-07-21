@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="4.7.1" />
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.4.4" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.13.0" />
     <PackageReference Include="FSharp.Control.AsyncSeq" Version="2.0.24" />
   </ItemGroup>
 
